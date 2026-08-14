@@ -1,0 +1,12 @@
+identifier: ch32x035c8t6_evt
+name: WCH CH32X035C8T6-EVT Evaluation Board
+type: mcu
+arch: riscv
+toolchain:
+  - cross-compile
+  - zephyr
+ram: 20
+flash: 62
+supported:
+  - gpio
+  - uart

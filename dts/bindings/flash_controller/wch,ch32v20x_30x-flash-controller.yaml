@@ -1,0 +1,8 @@
+# Copyright (c) 2026 carrefinho
+# SPDX-License-Identifier: Apache-2.0
+
+description: WCH CH32V20x/30x flash controller (FPEC)
+
+compatible: "wch,ch32v20x_30x-flash-controller"
+
+include: flash-controller.yaml

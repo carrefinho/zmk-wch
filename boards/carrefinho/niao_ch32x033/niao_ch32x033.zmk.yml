@@ -1,0 +1,8 @@
+file_format: "1"
+id: niao_ch32x033
+name: Niao CH32X033
+type: board
+arch: riscv
+outputs:
+  - usb
+exposes: [seeed_xiao]

@@ -1,0 +1,8 @@
+board:
+  name: niao_ch32x033
+  full_name: Niao CH32X033
+  vendor: carrefinho
+  socs:
+    - name: ch32x035
+      variants:
+        - name: zmk

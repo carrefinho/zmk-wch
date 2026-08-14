@@ -1,0 +1,15 @@
+/*
+ * Copyright (c) 2026 carrefinho
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/*
+ * CH32X035C8T6: LQFP48 package, 62 KiB flash, 20 KiB SRAM.
+ * GPIOA/GPIOB/GPIOC are bonded out (not all pins on every port).
+ *
+ * TODO: add per-port gpio-reserved-ranges once the exact C8T6 bonding is
+ * cross-checked against the datasheet pinout. Left unrestricted for now.
+ */
+
+#include <wch/ch32x0/ch32x035.dtsi>

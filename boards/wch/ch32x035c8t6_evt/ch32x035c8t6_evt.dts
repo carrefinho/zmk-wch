@@ -1,0 +1,66 @@
+/*
+ * Copyright (c) 2025 Bootlin
+ * Copyright (c) 2026 carrefinho
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/dts-v1/;
+
+#include <wch/ch32x0/ch32x035c8t6.dtsi>
+#include <zephyr/dt-bindings/gpio/gpio.h>
+#include "ch32x035c8t6_evt-pinctrl.dtsi"
+
+/ {
+	model = "ch32x035c8t6_evt";
+	compatible = "wch,ch32x035";
+
+	chosen {
+		zephyr,sram = &sram0;
+		zephyr,flash = &flash0;
+		zephyr,console = &usart1;
+		zephyr,shell-uart = &usart1;
+	};
+};
+
+&clk_hsi {
+	status = "okay";
+};
+
+&rcc {
+	clocks = <&clk_hsi>;
+};
+
+&gpioa {
+	status = "okay";
+};
+
+&gpiob {
+	status = "okay";
+};
+
+&gpioc {
+	status = "okay";
+};
+
+&usart1 {
+	status = "okay";
+	current-speed = <115200>;
+	pinctrl-0 = <&usart1_default>;
+	pinctrl-names = "default";
+};
+
+/*
+ * USB device controller. The board is bus-powered at 3.3V, so the driver's
+ * default PHY setup (USB_PHY_V33 + UDP_PUE_1K5) applies; a 5V-rail board
+ * would add `wch,vdd-5v`.
+ */
+&usbfs {
+	status = "okay";
+};
+
+zephyr_udc0: &usbfs {};
+
+/* GPIO interrupts (EXTI) -- matches what ch32v003evt does. */
+&exti {
+	status = "okay";
+};

@@ -1,0 +1,6 @@
+# Module fork of the stock CH32V00X_SYSTICK driver, generalised to the
+# QingKe V2C/V4B/V4C/V4F cores. Selected by SOC_FAMILY_CH32VX; the stock
+# CH32V00X_SYSTICK never fires for this family (its depends are v003-only).
+config WCHX_SYSTICK
+	bool
+	depends on DT_HAS_WCH_SYSTICK_ENABLED

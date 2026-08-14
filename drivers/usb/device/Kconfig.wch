@@ -1,0 +1,46 @@
+# Copyright (c) 2026 carrefinho
+# SPDX-License-Identifier: Apache-2.0
+
+config USB_DC_WCH
+	bool "WCH USBFS device controller driver (legacy usb_dc stack)"
+	default y
+	depends on DT_HAS_WCH_USBFS_ENABLED || DT_HAS_WCH_CH32X035_USBFS_ENABLED
+	depends on USB_DEVICE_DRIVER
+	help
+	  Legacy (CONFIG_USB_DEVICE_STACK) driver for the WCH full-speed USB
+	  device controllers: the V20x/V30x "USBHD" block (wch,usbfs) and the
+	  X03x device-only block (wch,ch32x035-usbfs). The block is selected
+	  at build time from devicetree.
+
+if USB_DC_WCH
+
+config USB_DC_WCH_STACK_SIZE
+	int "Callback thread stack size"
+	default 1024
+	help
+	  Stack size for the thread that runs the stack's endpoint and status
+	  callbacks outside ISR context.
+
+config USB_DC_WCH_THREAD_PRIORITY
+	int "Callback thread cooperative priority"
+	default 2
+	help
+	  Cooperative priority of the deferred callback thread.
+
+config USB_DC_WCH_MAX_QMESSAGES
+	int "Maximum number of queued ISR events"
+	range 4 64
+	default 8
+	help
+	  Depth of the message queue carrying events from the USB ISR to the
+	  callback thread.
+
+config USB_DC_WCH_VDD_5V
+	bool "Board runs the USB PHY from a 5V VDD"
+	depends on DT_HAS_WCH_CH32X035_USBFS_ENABLED
+	help
+	  On the CH32X03x the D+ pull-up strength and the internal 3.3V PHY LDO
+	  depend on the supply rail. Leave this unset for a 3.3V VDD (PHY LDO
+	  enabled, 1.5K pull-up); set it for a 5V VDD (no LDO, 10K pull-up).
+
+endif # USB_DC_WCH

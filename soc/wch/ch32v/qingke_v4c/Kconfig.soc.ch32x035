@@ -1,0 +1,10 @@
+# Copyright (c) 2025 MASSDRIVER EI (massdriver.space)
+# Copyright (c) 2026 carrefinho
+# SPDX-License-Identifier: Apache-2.0
+
+config SOC_CH32X035
+	bool
+	select SOC_SERIES_QINGKE_V4C
+
+config SOC
+	default "ch32x035" if SOC_CH32X035

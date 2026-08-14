@@ -1,0 +1,2 @@
+zephyr_library_named(zmk_wch_gpio)
+zephyr_library_sources_ifdef(CONFIG_GPIO_WCHX_GPIO wch_gpio_ch32v00x.c)

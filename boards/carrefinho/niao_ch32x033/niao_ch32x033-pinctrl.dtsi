@@ -1,0 +1,34 @@
+/*
+ * Copyright (c) 2026 carrefinho
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
+#include <zephyr/dt-bindings/pinctrl/ch32x035-pinctrl.h>
+
+&pinctrl {
+	/* XIAO D6/D7 = PA2/PA3 = USART2 default mapping. */
+	usart2_default: usart2_default {
+		group1 {
+			pinmux = <USART2_TX_PA2_0>;
+			output-high;
+			drive-push-pull;
+			slew-rate = "max-speed-10mhz";
+		};
+
+		group2 {
+			pinmux = <USART2_RX_PA3_0>;
+			bias-pull-up;
+		};
+	};
+
+	/* XIAO D5/D4 = PA10/PA11 = I2C1 default mapping. */
+	i2c1_default: i2c1_default {
+		group1 {
+			pinmux = <I2C1_SCL_PA10_0>, <I2C1_SDA_PA11_0>;
+			drive-open-drain;
+			output-high;
+			slew-rate = "max-speed-10mhz";
+		};
+	};
+};

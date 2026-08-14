@@ -1,0 +1,3 @@
+if DMA
+rsource "Kconfig.wch"
+endif # DMA

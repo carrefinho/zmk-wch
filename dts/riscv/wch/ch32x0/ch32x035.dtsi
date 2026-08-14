@@ -1,0 +1,271 @@
+/*
+ * Copyright (c) 2025 MASSDRIVER EI (massdriver.space)
+ * Copyright (c) 2026 carrefinho
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+#include <freq.h>
+#include <mem.h>
+#include <wch/qingke-v4c.dtsi>
+#include <zephyr/dt-bindings/gpio/gpio.h>
+#include <zephyr/dt-bindings/clock/ch32v20x_30x-clocks.h>
+
+/*
+ * CH32X035: QingKe V4C core @ 48 MHz.
+ *
+ * The X035 clock tree is much simpler than the V20x/V30x: there is no HSE and
+ * no PLL, the core always runs from the 48 MHz internal HSI. The RCC register
+ * block, clock-enable bit layout (AHB/APB2/APB1) and USART/GPIO register maps
+ * match the V20x family closely enough that the existing wch,rcc, wch,usart and
+ * wch,gpio drivers are reused as-is; only the AFIO/pinctrl block differs (see
+ * the wch,x03x-afio node below).
+ */
+
+/ {
+	clocks {
+		clk_hsi: clk-hsi {
+			#clock-cells = <0>;
+			compatible = "wch,ch32v00x-hsi-clock";
+			clock-frequency = <DT_FREQ_M(48)>;
+			status = "okay";
+		};
+
+		clk_lsi: clk-lsi {
+			#clock-cells = <0>;
+			compatible = "fixed-clock";
+			clock-frequency = <DT_FREQ_K(32)>;
+			status = "disabled";
+		};
+	};
+
+	soc {
+		sram0: memory@20000000 {
+			compatible = "mmio-sram";
+			reg = <0x20000000 DT_SIZE_K(20)>;
+		};
+
+		flash: flash-controller@40022000 {
+			compatible = "wch,ch32x03x-flash-controller";
+			reg = <0x40022000 0x400>;
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			flash0: flash@8000000 {
+				compatible = "soc-nv-flash";
+				reg = <0x08000000 DT_SIZE_K(62)>;
+			};
+		};
+
+		pwr: pwr@40007000 {
+			compatible = "wch,pwr";
+			reg = <0x40007000 16>;
+		};
+
+		/*
+		 * CH32X035 EXTI: 26 lines (0..25) grouped into three PFIC IRQs
+		 * (ch32x03xhw.h): EXTI7_0=20 (lines 0-7), EXTI15_8=40 (lines
+		 * 8-15), EXTI25_16=41 (lines 16-25). The register block
+		 * (INTENR/EVENR/RTENR/FTENR/SWIEVR/INTFR) is identical to the
+		 * V20x/30x part, so the generic wch,exti binding/driver applies;
+		 * only the line-to-IRQ grouping and the AFIO EXTICR layout
+		 * (EXTICR1/EXTICR2, 2 bits/line) differ, the latter handled in
+		 * the GPIO driver. Disabled by default; boards enable it.
+		 */
+		exti: interrupt-controller@40010400 {
+			compatible = "wch,exti";
+			interrupt-controller;
+			#interrupt-cells = <1>;
+			reg = <0x40010400 24>;
+			interrupt-parent = <&pfic>;
+			num-lines = <26>;
+			line-ranges = <0 8>, <8 8>, <16 10>;
+			interrupts = <20 40 41>;
+			interrupt-names = "line7-0", "line15-8", "line25-16";
+			status = "disabled";
+		};
+
+		pinctrl: pin-controller@40010000 {
+			compatible = "wch,x03x-afio";
+			reg = <0x40010000 16>;
+			#address-cells = <1>;
+			#size-cells = <1>;
+			clocks = <&rcc CH32V20X_V30X_CLOCK_AFIO>;
+
+			gpioa: gpio@40010800 {
+				compatible = "wch,gpio";
+				reg = <0x40010800 0x20>;
+				gpio-controller;
+				#gpio-cells = <2>;
+				ngpios = <24>;
+				clocks = <&rcc CH32V20X_V30X_CLOCK_IOPA>;
+			};
+
+			gpiob: gpio@40010c00 {
+				compatible = "wch,gpio";
+				reg = <0x40010c00 0x20>;
+				gpio-controller;
+				#gpio-cells = <2>;
+				ngpios = <24>;
+				clocks = <&rcc CH32V20X_V30X_CLOCK_IOPB>;
+			};
+
+			gpioc: gpio@40011000 {
+				compatible = "wch,gpio";
+				reg = <0x40011000 0x20>;
+				gpio-controller;
+				#gpio-cells = <2>;
+				ngpios = <24>;
+				clocks = <&rcc CH32V20X_V30X_CLOCK_IOPC>;
+			};
+		};
+
+		usart1: uart@40013800 {
+			compatible = "wch,usart";
+			reg = <0x40013800 0x20>;
+			clocks = <&rcc CH32V20X_V30X_CLOCK_USART1>;
+			interrupt-parent = <&pfic>;
+			interrupts = <32>;
+			status = "disabled";
+		};
+
+		usart2: uart@40004400 {
+			compatible = "wch,usart";
+			reg = <0x40004400 0x20>;
+			clocks = <&rcc CH32V20X_V30X_CLOCK_USART2>;
+			interrupt-parent = <&pfic>;
+			interrupts = <39>;
+			status = "disabled";
+		};
+
+		usart3: uart@40004800 {
+			compatible = "wch,usart";
+			reg = <0x40004800 0x20>;
+			clocks = <&rcc CH32V20X_V30X_CLOCK_USART3>;
+			interrupt-parent = <&pfic>;
+			interrupts = <42>;
+			status = "disabled";
+		};
+
+		usart4: uart@40004c00 {
+			compatible = "wch,usart";
+			reg = <0x40004c00 0x20>;
+			clocks = <&rcc CH32V20X_V30X_CLOCK_USART4>;
+			interrupt-parent = <&pfic>;
+			interrupts = <43>;
+			status = "disabled";
+		};
+
+		/*
+		 * The X035 has one SPI and one I2C, at the same addresses and on
+		 * the same RCC gates as the V20x/V30x. Only the PFIC vectors
+		 * differ (SPI1 33, I2C1 event 30 / error 31). The register block
+		 * is the V20x/V30x one minus the I2S extension (SPI) and minus
+		 * the rise-time register RTR (I2C), neither of which the drivers
+		 * touch on this part.
+		 */
+		spi1: spi@40013000 {
+			compatible = "wch,spi";
+			reg = <0x40013000 0x24>;
+			clocks = <&rcc CH32V20X_V30X_CLOCK_SPI1>;
+			interrupt-parent = <&pfic>;
+			interrupts = <33>;
+			status = "disabled";
+			#address-cells = <1>;
+			#size-cells = <0>;
+		};
+
+		i2c1: i2c@40005400 {
+			compatible = "wch,i2c";
+			reg = <0x40005400 0x400>;
+			clocks = <&rcc CH32V20X_V30X_CLOCK_I2C1>;
+			interrupt-parent = <&pfic>;
+			interrupts = <30>, <31>;
+			status = "disabled";
+			#address-cells = <1>;
+			#size-cells = <0>;
+		};
+
+		/*
+		 * TIM3, the part's only general-purpose timer and so the only
+		 * one pwm_wch_gptm can drive: TIM1 and TIM2 are advanced timers
+		 * whose outputs stay disabled until BDTR.MOE is set, which the
+		 * driver never writes. Two channels, remappable to PA6/PA7 (0),
+		 * PB4/PB5 (1), PC19/PC18 (2) or PA3/PA4 (3).
+		 */
+		timer3: counter@40000400 {
+			compatible = "wch,gptm";
+			reg = <0x40000400 16>;
+			prescaler = <1>;
+			channels = <2>;
+			clocks = <&rcc CH32V20X_V30X_CLOCK_TIM3>;
+			interrupt-parent = <&pfic>;
+			interrupts = <54>;
+			interrupt-names = "global";
+			status = "disabled";
+
+			pwm3: pwm {
+				compatible = "wch,gptm-pwm";
+				pwm-controller;
+				#pwm-cells = <3>;
+				status = "disabled";
+			};
+		};
+
+		/*
+		 * DMA1, eight channels (RM 9.2.3). Channel registers are a flat
+		 * 20-byte stride from 0x08, so channel 8 at 0x94 is contiguous
+		 * with the rest and its status bits are the top nibble of INTFR.
+		 * The vectors are not contiguous: channels 1-7 are 22-28 and
+		 * channel 8 is 44.
+		 *
+		 * Request map, for whoever wires a peripheral to it: SPI_RX ch2,
+		 * SPI_TX ch3, USART1_TX ch4 / RX ch5, USART2_RX ch6 / TX ch7,
+		 * USART3_TX ch2 / RX ch3, USART4_TX ch1 / RX ch8, I2C_TX ch6 /
+		 * RX ch7.
+		 */
+		dma1: dma@40020000 {
+			compatible = "wch,wch-dma";
+			reg = <0x40020000 0xa4>;
+			clocks = <&rcc CH32V20X_V30X_CLOCK_DMA1>;
+			#dma-cells = <1>;
+			interrupt-parent = <&pfic>;
+			interrupts = <22>, <23>, <24>, <25>, <26>, <27>, <28>, <44>;
+			dma-channels = <8>;
+			status = "disabled";
+		};
+
+		rcc: rcc@40021000 {
+			compatible = "wch,rcc";
+			reg = <0x40021000 16>;
+			clocks = <&clk_hsi>;
+			#clock-cells = <1>;
+			status = "okay";
+		};
+
+		/*
+		 * CH32X035 USBFS device controller. Device-only block at
+		 * 0x40023400, IRQ 45 (wakeup on 46, not modelled). 48 MHz comes
+		 * straight from HSI48 (no USB prescaler); only the RCC AHB gate
+		 * (bit 12, reusing the OTG_FS cell) and the AFIO gate need
+		 * enabling. Not register-compatible with wch,usbfs. Disabled by
+		 * default; a board or overlay enables it (the USB pads are
+		 * PC16/PC17, which the driver claims through AFIO->CTLR).
+		 */
+		usbfs: usbfs@40023400 {
+			compatible = "wch,ch32x035-usbfs";
+			reg = <0x40023400 0x80>;
+			clocks = <&rcc CH32V20X_V30X_CLOCK_OTG_FS>,
+				 <&rcc CH32V20X_V30X_CLOCK_AFIO>;
+			num-bidir-endpoints = <8>;
+			maximum-speed = "full-speed";
+			interrupt-parent = <&pfic>;
+			interrupts = <45>;
+			status = "disabled";
+		};
+	};
+};
+
+&cpu0 {
+	clock-frequency = <DT_FREQ_M(48)>;
+};

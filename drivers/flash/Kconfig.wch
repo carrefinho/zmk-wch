@@ -1,0 +1,55 @@
+# Copyright (c) 2026 carrefinho
+# SPDX-License-Identifier: Apache-2.0
+
+config SOC_FLASH_WCH
+	bool "WCH CH32V20x/30x/X03x flash driver"
+	default y
+	depends on DT_HAS_WCH_CH32V20X_30X_FLASH_CONTROLLER_ENABLED || \
+		   DT_HAS_WCH_CH32X03X_FLASH_CONTROLLER_ENABLED
+	select FLASH_HAS_DRIVER_ENABLED
+	select FLASH_HAS_PAGE_LAYOUT
+	select FLASH_HAS_EXPLICIT_ERASE
+	help
+	  Enable the WCH main flash driver for the CH32V20x/30x and CH32X03x
+	  FPEC. Uses fast-mode 256-byte read-modify-write pages to emulate a
+	  conventional 0xFF-erased flash (see the driver header for the
+	  hardware-verified semantics behind that choice).
+
+config SOC_FLASH_WCH_READ_ACCELERATION
+	bool "Enable WCH flash enhanced read mode"
+	default y
+	depends on SOC_FLASH_WCH
+	depends on DT_HAS_WCH_CH32V20X_30X_FLASH_CONTROLLER_ENABLED
+	help
+	  Enable the FPEC's enhanced read mode (FLASH_CTLR ENHANCE_MOD, bit
+	  24), which is clear out of reset. It speeds up reads from the
+	  non-zero-wait flash region above the marketed size -- the region
+	  relocated cold code has to live in on small parts. Reads inside the
+	  zero-wait region are unaffected.
+
+	  Per RM 32.3 the driver exits the mode across every program/erase
+	  (with it on, operations fail -- hardware-confirmed) and around
+	  stop-mode entry when CONFIG_PM is set, and re-enters afterwards.
+
+	  Only the CH32V20x/30x FPEC has this bit; the CH32X03x reference
+	  manual lists bits 24 and 25 as reserved.
+
+config SOC_FLASH_WCH_SCKMOD_FULL_SPEED
+	bool "Run the flash access clock at the full system clock (out of spec)"
+	depends on SOC_FLASH_WCH_READ_ACCELERATION
+	help
+	  Set FLASH_CTLR SCKMOD (bit 25) so the flash access clock is the
+	  system clock rather than half of it.
+
+	  The driver already sets SCKMOD automatically when the system clock
+	  is at or below 60 MHz. This option forces it on ABOVE that, which
+	  RM 32.4 explicitly disallows: "FLASH access clock frequency cannot
+	  be more than 60 MHz".
+
+	  It is offered because the gain is large and it does measurably work:
+	  on a CH32V203C8T6 at 144 MHz, reads of the non-zero-wait region went
+	  2148 -> 1010 us/4K and instruction fetch 751 -> 347 ms with it set,
+	  versus 2148 -> 1807 us and 751 -> 681 ms from enhanced read mode
+	  alone. But that was one part at room temperature, running the access
+	  clock at 2.4x the documented maximum. Do not ship it without your
+	  own validation across voltage, temperature and several units.

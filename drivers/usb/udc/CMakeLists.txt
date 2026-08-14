@@ -1,0 +1,4 @@
+zephyr_library_named(zmk_wch_udc)
+zephyr_library_sources_ifdef(CONFIG_UDC_WCH udc_wch.c)
+zephyr_library_sources_ifdef(CONFIG_UDC_WCH_X03X udc_wch_x03x.c)
+zephyr_library_include_directories(${ZEPHYR_BASE}/drivers/usb/udc)

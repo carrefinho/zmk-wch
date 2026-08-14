@@ -1,0 +1,2 @@
+zephyr_library_named(zmk_wch_clock_control)
+zephyr_library_sources_ifdef(CONFIG_CLOCK_CONTROL_WCHX_RCC clock_control_wch_rcc.c)

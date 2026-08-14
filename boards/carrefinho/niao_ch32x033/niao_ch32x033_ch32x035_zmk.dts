@@ -1,0 +1,58 @@
+/*
+ * Copyright (c) 2026 carrefinho
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
+#include "niao_ch32x033.dts"
+
+/ {
+	chosen {
+		zmk,kscan = &kscan0;
+	};
+
+	/*
+	 * The board's only button, S2 on PB7, wired to GND. It is silkscreened
+	 * RESET but is inert as a reset: the option byte RST_MOD defaults to
+	 * 0b11, which leaves PB7 as a plain GPIO (confirmed on hardware via
+	 * `wchisp info`). So it is usable as a key. No external pull-up or
+	 * debounce cap is fitted -- the internal pull-up does the job.
+	 */
+	kscan0: kscan_0 {
+		compatible = "zmk,kscan-gpio-direct";
+		input-gpios = <&gpiob 7 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+	};
+};
+
+/* The console would fight the keymap for D6/D7; leave the pads free. */
+&usart2 {
+	status = "disabled";
+};
+
+/*
+ * 60 K code + 2 K settings = the whole 62 K. NVS wants 8 sectors and the WCH
+ * flash page is 256 B, so 2 K is the natural minimum for the storage partition.
+ */
+&flash0 {
+	partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		code_partition: partition@0 {
+			label = "code";
+			reg = <0x00000000 0x0000f000>;
+		};
+
+		storage_partition: partition@f000 {
+			label = "storage";
+			reg = <0x0000f000 0x00000800>;
+		};
+	};
+};
+
+/ {
+	chosen {
+		zephyr,code-partition = &code_partition;
+	};
+};

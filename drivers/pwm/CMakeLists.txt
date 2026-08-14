@@ -1,0 +1,2 @@
+zephyr_library_named(zmk_wch_pwm)
+zephyr_library_sources_ifdef(CONFIG_PWM_WCH_GPTM pwm_wch_gptm.c)

@@ -1,0 +1,13 @@
+# Copyright (c) 2025 MASSDRIVER EI (massdriver.space)
+# Copyright (c) 2026 carrefinho
+# SPDX-License-Identifier: Apache-2.0
+
+if SOC_CH32X035
+
+config VECTOR_TABLE_SIZE
+	default 60
+
+config NUM_IRQS
+	default 60
+
+endif # SOC_CH32X035

@@ -1,0 +1,16 @@
+# Module fork of the stock GPIO_WCH_GPIO driver, adding EXTI interrupt
+# support (level emulation via SWIEVR). Disable the stock GPIO_WCH_GPIO
+# when this one is active.
+config GPIO_WCHX_GPIO
+	bool "WCH GPIO driver (zmk-wch module fork)"
+	default y
+	depends on SOC_FAMILY_CH32VX && DT_HAS_WCH_GPIO_ENABLED
+
+config GPIO_WCH_GPIO_INTERRUPTS
+	bool "Interrupt support"
+	depends on GPIO_WCHX_GPIO
+	depends on DT_HAS_WCH_EXTI_ENABLED
+	default y
+	help
+	  Support triggering an interrupt on pin change. Uses approximately
+	  700 bytes of flash and 60 bytes of RAM.

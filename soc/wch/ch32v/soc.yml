@@ -1,0 +1,20 @@
+# Out-of-tree WCH family: same silicon naming as upstream ch32v, but a
+# distinct family so stock family-wide selects (CH32V00X_SYSTICK, whose
+# depends would go unmet) never fire for these parts.
+family:
+- name: ch32vx
+  series:
+  - name: qingke-v2c
+    socs:
+    - name: ch32v006
+  - name: qingke-v4b
+    socs:
+    - name: ch32v203
+  - name: qingke-v4c
+    socs:
+    - name: ch32v208
+    - name: ch32x035
+  - name: qingke-v4f
+    socs:
+    - name: ch32v303
+    - name: ch32v307

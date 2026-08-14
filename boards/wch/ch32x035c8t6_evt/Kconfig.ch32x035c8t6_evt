@@ -1,0 +1,6 @@
+# Copyright (c) 2025 Bootlin
+# Copyright (c) 2026 carrefinho
+# SPDX-License-Identifier: Apache-2.0
+
+config BOARD_CH32X035C8T6_EVT
+	select SOC_CH32X035

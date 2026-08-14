@@ -1,0 +1,4 @@
+zephyr_library_named(zmk_wch_pinctrl)
+zephyr_library_sources_ifdef(CONFIG_PINCTRL_WCH_00X_AFIO pinctrl_wch_00x_afio.c)
+zephyr_library_sources_ifdef(CONFIG_PINCTRL_WCH_20X_30X_AFIO pinctrl_wch_20x_30x_afio.c)
+zephyr_library_sources_ifdef(CONFIG_PINCTRL_WCH_X03X_AFIO pinctrl_wch_x03x_afio.c)

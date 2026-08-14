@@ -1,0 +1,30 @@
+# Copyright (c) 2026 carrefinho
+# SPDX-License-Identifier: MIT
+
+CONFIG_SYS_CLOCK_HW_CYCLES_PER_SEC=48000000
+
+CONFIG_GPIO=y
+CONFIG_PINCTRL=y
+CONFIG_CLOCK_CONTROL=y
+
+CONFIG_ZMK_USB=y
+
+# A 100 Hz tick would quantise the debounce period up by 10x.
+CONFIG_SYS_CLOCK_TICKS_PER_SEC=1000
+
+# RISC-V pushes the ~80 B exception frame onto the interrupted thread's stack
+# and RISCV_ALWAYS_SWITCH_THROUGH_ECALL adds another, so the ARM-derived 128 is
+# below the 160 B peak measured on this port -- it boots or panics depending on
+# linker layout. The workqueue figure is the measured keypress path (behaviour
+# queue, hold-taps, combos), not an idle/RPC session.
+CONFIG_IDLE_STACK_SIZE=512
+CONFIG_SYSTEM_WORKQUEUE_STACK_SIZE=2560
+
+CONFIG_USE_DT_CODE_PARTITION=y
+
+# Stock 4.1 ships v003-era WCH drivers that autoselect on our DT compatibles;
+# the zmk-wch module carries extended forks under WCHX_* symbols instead.
+CONFIG_UART_WCH_USART=n
+CONFIG_GPIO_WCH_GPIO=n
+CONFIG_CLOCK_CONTROL_WCH_RCC=n
+CONFIG_WCH_PFIC=n

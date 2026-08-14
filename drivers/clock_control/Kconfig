@@ -1,0 +1,24 @@
+# Module fork of the stock CLOCK_CONTROL_WCH_RCC driver, carrying the
+# V20x/30x PLL support and the X035 single-source/no-LSI handling. The stock
+# driver must be disabled (CLOCK_CONTROL_WCH_RCC=n) when this one is active.
+config CLOCK_CONTROL_WCHX_RCC
+	bool "WCH RCC driver (zmk-wch module fork)"
+	default y
+	depends on SOC_FAMILY_CH32VX && DT_HAS_WCH_RCC_ENABLED
+
+config CLOCK_CONTROL_WCH_RCC_SINGLE_SOURCE
+	bool
+	default y if SOC_CH32X035
+	depends on CLOCK_CONTROL_WCHX_RCC
+	help
+	  Selected on SoCs with exactly one system clock source (no HSE, no
+	  PLL), where RCC_CFGR0 has no SW/SWS select field and RCC_CTLR has no
+	  clock-security enable.
+
+config CLOCK_CONTROL_WCH_RCC_NO_LSI_CONTROL
+	bool
+	default y if SOC_CH32X035
+	depends on CLOCK_CONTROL_WCHX_RCC
+	help
+	  Selected on SoCs whose RCC_RSTSCKR has no LSION/LSIRDY bits; waiting
+	  for a ready bit that never sets hangs the boot.

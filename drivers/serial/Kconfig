@@ -1,0 +1,10 @@
+# Module fork of the stock UART_WCH_USART driver, carrying the TX-callback
+# fix and single-wire half-duplex support. Disable the stock UART_WCH_USART
+# when this one is active.
+config UART_WCHX_USART
+	bool "WCH USART driver (zmk-wch module fork)"
+	default y
+	depends on SOC_FAMILY_CH32VX && DT_HAS_WCH_USART_ENABLED
+	select SERIAL_HAS_DRIVER
+	select SERIAL_SUPPORT_INTERRUPT
+	select PINCTRL

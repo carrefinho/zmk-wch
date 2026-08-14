@@ -1,0 +1,2 @@
+zephyr_library_named(zmk_wch_dma)
+zephyr_library_sources_ifdef(CONFIG_DMA_WCH dma_wch.c)

@@ -1,0 +1,38 @@
+# Copyright (c) 2024 Michael Hope
+# Copyright (c) 2024 Jianxiong Gu
+# Copyright (c) 2026 carrefinho
+# SPDX-License-Identifier: Apache-2.0
+
+config SOC_FAMILY_CH32VX
+	select RISCV
+	# The QingKe PFIC sets a per-IRQ active flag on interrupt entry that only
+	# an mret clears, and while it is set no same-priority interrupt is
+	# dispatched. Zephyr's z_riscv_switch fast path leaves a rescheduling
+	# trap via plain ret, so a switch from ISR context abandons the trap and
+	# wedges interrupt delivery. Route every switch through ecall so each
+	# trap entry is balanced by exactly one mret.
+	select RISCV_ALWAYS_SWITCH_THROUGH_ECALL if MULTITHREADING
+	select BUILD_OUTPUT_HEX
+	select WCHX_SYSTICK
+	select HAS_PM
+	select ARCH_HAS_CUSTOM_CPU_IDLE
+	select ARCH_HAS_CUSTOM_CPU_ATOMIC_IDLE
+	select HAS_SEGGER_RTT if ZEPHYR_SEGGER_MODULE
+	# The RISC-V linker already honours CONFIG_FLASH_LOAD_OFFSET/_SIZE;
+	# advertising it here is what makes USE_DT_CODE_PARTITION selectable.
+	select HAS_FLASH_LOAD_OFFSET
+	imply XIP
+
+if SOC_FAMILY_CH32VX
+
+config VECTOR_TABLE_SIZE
+	int
+	range 20 256
+	help
+	  Total number of interrupt and exception vectors. Promptless shadow of
+	  the stock soc/wch/ch32v definition, which is gated behind
+	  SOC_FAMILY_CH32V and therefore valueless for this family.
+
+rsource "*/Kconfig"
+
+endif # SOC_FAMILY_CH32VX

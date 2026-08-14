@@ -1,0 +1,3 @@
+if SPI
+rsource "Kconfig.wch"
+endif # SPI

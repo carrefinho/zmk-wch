@@ -1,0 +1,9 @@
+# Copyright (c) 2026 carrefinho
+# SPDX-License-Identifier: MIT
+
+if BOARD_NIAO_CH32X033_CH32X035_ZMK
+
+config ZMK_KEYBOARD_NAME
+	default "Niao CH32X033"
+
+endif # BOARD_NIAO_CH32X033_CH32X035_ZMK

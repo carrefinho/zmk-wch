@@ -1,0 +1,27 @@
+/*
+ * Copyright (c) 2026 carrefinho
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
+#include <behaviors.dtsi>
+#include <dt-bindings/zmk/keys.h>
+
+/ {
+	macros {
+		zmk_macro: zmk_macro {
+			compatible = "zmk,behavior-macro";
+			#binding-cells = <0>;
+			bindings = <&macro_tap &kp LS(Z) &kp LS(M) &kp LS(K) &kp EXCL>;
+		};
+	};
+
+	keymap {
+		compatible = "zmk,keymap";
+
+		default_layer {
+			/* The one onboard button, S2 on PB7. */
+			bindings = <&zmk_macro>;
+		};
+	};
+};

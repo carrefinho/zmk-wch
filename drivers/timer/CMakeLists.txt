@@ -1,0 +1,2 @@
+zephyr_library_named(zmk_wch_timer)
+zephyr_library_sources_ifdef(CONFIG_WCHX_SYSTICK wch_systick_ch32v00x.c)

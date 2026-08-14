@@ -1,0 +1,20 @@
+/*
+ * Copyright (c) 2026 carrefinho
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/*
+ * CH32X033F8P6: TSSOP20 package, 62 KiB flash, 20 KiB SRAM.
+ *
+ * The X033 is the same die as the CH32X035 (the datasheet CH32X035DS0 covers
+ * both; the X033 pin table is its Table 2-2) with the USB PD PHY and most pins
+ * left unbonded, so the SoC description is shared verbatim and only the
+ * package differs. Kconfig-wise it is still SOC_CH32X035.
+ *
+ * Bonded out on TSSOP20 (Table 2-2): PA0-PA6, PA9-PA11, PB1, PB7, PC3,
+ * PC16/PC17 (USB DM/DP, internally shorted to PC11/PC10) and PC18/PC19
+ * (SWDIO/SWCLK). PA7 shares its pad with PB0.
+ */
+
+#include <wch/ch32x0/ch32x035.dtsi>

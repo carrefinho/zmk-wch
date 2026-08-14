@@ -1,0 +1,2 @@
+zephyr_library_named(zmk_wch_serial)
+zephyr_library_sources_ifdef(CONFIG_UART_WCHX_USART uart_wch_usart.c)

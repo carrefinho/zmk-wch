@@ -1,0 +1,10 @@
+# Copyright (c) 2024 MASSDRIVER EI (massdriver.space)
+# Copyright (c) 2026 carrefinho
+# SPDX-License-Identifier: Apache-2.0
+
+config PINCTRL_WCH_X03X_AFIO
+	bool "WCH AFIO pin controller driver for CH32X035"
+	default y
+	depends on DT_HAS_WCH_X03X_AFIO_ENABLED
+	help
+	  WCH CH32X03x AFIO pin controller driver (single PCFR1 remap register).

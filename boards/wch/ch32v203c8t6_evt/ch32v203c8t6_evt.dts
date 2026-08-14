@@ -1,0 +1,99 @@
+/*
+ * Copyright (c) 2025 Bootlin
+ * Copyright (c) 2026 carrefinho
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/dts-v1/;
+
+#include <wch/ch32v203/ch32v203c8t.dtsi>
+#include <zephyr/dt-bindings/gpio/gpio.h>
+#include "ch32v203c8t6_evt-pinctrl.dtsi"
+
+/ {
+	model = "ch32v203c8t6_evt";
+	compatible = "wch,ch32v203";
+
+	chosen {
+		zephyr,sram = &sram0;
+		zephyr,flash = &flash0;
+		zephyr,console = &usart1;
+		zephyr,shell-uart = &usart1;
+	};
+};
+
+/*
+ * The EVT board has an 8 MHz crystal fitted, but the PLL is fed from the HSI
+ * here: the V203 packages this port targets (F8P6 / F8U6 / G8R6) bond no OSC
+ * pins, so USB has to run off the HSI-fed PLL on those parts and the board that
+ * *can* use a crystal is the one place to prove it works without one. Switch
+ * &clk_hse on and re-point &pll at it to use the crystal instead.
+ *
+ * 8 MHz HSI, undivided, x18 = 144 MHz. USB requires SYSCLK to be 48, 96 or
+ * 144 MHz (the RCC driver sets USBPRE from it and errors out otherwise), and
+ * the dtsi default mul = <15> would give 120. The RCC driver BUILD_ASSERTs the
+ * PLL output against &cpu0 clock-frequency, so a mismatch is a build error.
+ *
+ * Trade-off at 144 MHz: with SCKMOD = 0 the flash access clock is SYSCLK/2 =
+ * 72 MHz, above the 60 MHz RM 32.4 states -- unavoidable at 144, and WCH's own
+ * headline configuration has the same property.
+ */
+&clk_hsi {
+	status = "okay";
+};
+
+&pll {
+	clocks = <&clk_hsi>;
+	hsi-pre-div = <1>;
+	mul = <18>;
+	status = "okay";
+};
+
+&rcc {
+	clocks = <&pll>;
+};
+
+&cpu0 {
+	clock-frequency = <DT_FREQ_M(144)>;
+};
+
+/*
+ * The die carries 224 KiB (probed on hardware, and what ch32v203.dtsi
+ * declares): the marketed 64 KiB is the zero-wait window and the remaining
+ * 160 KiB is the slower non-zero-wait area, which ESIG_FLACAP does not report.
+ * Instruction fetch from up there is ~16-24x slower, so an image is only safe
+ * above 0x08010000 if it was put there deliberately -- confine code with a
+ * 64 K code partition plus CONFIG_USE_DT_CODE_PARTITION, and prefer the region
+ * for data (a settings partition) over code.
+ */
+
+&gpioa {
+	status = "okay";
+};
+
+&gpiob {
+	status = "okay";
+};
+
+&usart1 {
+	status = "okay";
+	current-speed = <115200>;
+	pinctrl-0 = <&usart1_default>;
+	pinctrl-names = "default";
+};
+
+/*
+ * USB device controller. V203 has two USB peripherals; only usb@50000000
+ * (OTG_FS, IRQ 59) is wired in the dtsi, and it is what usb_dc_wch drives.
+ * The board is 3.3 V, so the driver's default PHY setup applies.
+ */
+&usb0 {
+	status = "okay";
+};
+
+zephyr_udc0: &usb0 {};
+
+/* GPIO interrupts (EXTI) -- matches what ch32v003evt does. */
+&exti {
+	status = "okay";
+};

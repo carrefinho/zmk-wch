@@ -1,0 +1,2 @@
+rsource "device/Kconfig"
+rsource "udc/Kconfig"

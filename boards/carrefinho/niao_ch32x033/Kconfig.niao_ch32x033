@@ -1,0 +1,6 @@
+# Copyright (c) 2026 carrefinho
+# SPDX-License-Identifier: MIT
+
+config BOARD_NIAO_CH32X033
+	select SOC_CH32X035
+	select ZMK_BOARD_COMPAT if BOARD_NIAO_CH32X033_CH32X035_ZMK

@@ -1,0 +1,3 @@
+if I2C
+rsource "Kconfig.wch"
+endif # I2C

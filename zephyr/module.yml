@@ -1,0 +1,8 @@
+name: zmk-wch
+build:
+  cmake: .
+  kconfig: Kconfig
+  settings:
+    board_root: .
+    soc_root: .
+    dts_root: .

@@ -1,0 +1,51 @@
+/*
+ * Copyright (c) 2026 carrefinho
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
+/ {
+	xiao_d: connector {
+		compatible = "seeed,xiao-gpio";
+		#gpio-cells = <2>;
+		gpio-map-mask = <0xffffffff 0xffffffc0>;
+		gpio-map-pass-thru = <0 0x3f>;
+		gpio-map
+			= <0 0 &gpioa 4 0>		/* D0  / A0        PA4  */
+			, <1 0 &gpioa 1 0>		/* D1  / A1        PA1  */
+			, <2 0 &gpioa 0 0>		/* D2  / A2        PA0  */
+			, <3 0 &gpioc 3 0>		/* D3  / A3        PC3  */
+			, <4 0 &gpioa 11 0>		/* D4  / SDA       PA11 */
+			, <5 0 &gpioa 10 0>		/* D5  / SCL       PA10 */
+			, <6 0 &gpioa 2 0>		/* D6  / TX        PA2  */
+			, <7 0 &gpioa 3 0>		/* D7  / RX        PA3  */
+			, <8 0 &gpioa 5 0>		/* D8  / SCK       PA5  */
+			, <9 0 &gpioa 6 0>		/* D9  / MISO      PA6  */
+			, <10 0 &gpioa 9 0>		/* D10 / MOSI      PA9  */
+			;
+	};
+};
+
+xiao_i2c: &i2c1 {
+};
+xiao_serial: &usart2 {
+};
+
+/*
+ * No xiao_spi, deliberately.
+ *
+ * SPI1_RM[1:0] (RM 8.3.2.1) moves all four signals as a group, so the XIAO
+ * standard pads cannot carry SPI here: mapping 00 (NSS/PA4 CK/PA5 MISO/PA6
+ * MOSI/PA7) needs PA7, which shares its pad with PB0 and is prohibited from
+ * being an output (DS note 4); mappings 01 and 11 need PB21/PB15/PA8 and
+ * PC4-PC7, none of which are bonded on TSSOP20.
+ *
+ * Mapping 10 (CK/PA11 MISO/PA9 MOSI/PA10) *is* fully bonded and reachable --
+ * it lands on D4/D10/D5, i.e. the I2C pads plus D10, with CS on a GPIO since
+ * NSS/PA12 is not bonded. That is a working but non-standard arrangement and
+ * mutually exclusive with I2C1, so it is left out until a shield needs it.
+ *
+ * Note also that I2C is a lot-code lottery on this part: "I2C功能不适用于批号
+ * 倒数第5位为0的产品" (DS 1.4.16) -- if the 5th-from-last digit of the lot
+ * number is 0, the peripheral is absent entirely.
+ */

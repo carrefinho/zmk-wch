@@ -1,0 +1,3 @@
+zephyr_library_named(zmk_wch_intc)
+zephyr_library_sources_ifdef(CONFIG_WCHX_PFIC intc_wch_pfic.c)
+zephyr_library_sources_ifdef(CONFIG_WCH_EXTI intc_wch_exti.c)

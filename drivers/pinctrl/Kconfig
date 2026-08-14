@@ -1,0 +1,3 @@
+rsource "Kconfig.wch_00x_afio"
+rsource "Kconfig.wch_20x_30x_afio"
+rsource "Kconfig.wch_x03x_afio"

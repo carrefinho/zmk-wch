@@ -1,0 +1,8 @@
+# Module fork of the stock WCH_PFIC driver (X03x vector layout + ecall fix).
+# Disable the stock WCH_PFIC when this one is active.
+config WCHX_PFIC
+	bool "WCH PFIC driver (zmk-wch module fork)"
+	default y
+	depends on SOC_FAMILY_CH32VX && DT_HAS_WCH_PFIC_ENABLED
+
+rsource "Kconfig.wch_exti"

@@ -1,0 +1,2 @@
+zephyr_library_named(zmk_wch_i2c)
+zephyr_library_sources_ifdef(CONFIG_I2C_WCH i2c_wch.c)

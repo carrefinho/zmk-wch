@@ -1,0 +1,3 @@
+if FLASH
+rsource "Kconfig.wch"
+endif # FLASH

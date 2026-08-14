@@ -1,0 +1,14 @@
+# Copyright (c) 2025 Michael Hope <michaelh@juju.nz>
+# SPDX-License-Identifier: Apache-2.0
+
+CONFIG_GPIO=y
+CONFIG_SERIAL=y
+CONFIG_CONSOLE=y
+CONFIG_UART_CONSOLE=y
+
+# Stock 4.1 ships v003-era WCH drivers that autoselect on our DT compatibles;
+# the zmk-wch module carries extended forks under WCHX_* symbols instead.
+CONFIG_UART_WCH_USART=n
+CONFIG_GPIO_WCH_GPIO=n
+CONFIG_CLOCK_CONTROL_WCH_RCC=n
+CONFIG_WCH_PFIC=n

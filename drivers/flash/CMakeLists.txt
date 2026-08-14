@@ -1,0 +1,2 @@
+zephyr_library_named(zmk_wch_flash)
+zephyr_library_sources_ifdef(CONFIG_SOC_FLASH_WCH flash_wch_20x_30x.c)

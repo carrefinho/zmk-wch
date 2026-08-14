@@ -1,0 +1,2 @@
+zephyr_library_named(zmk_wch_spi)
+zephyr_library_sources_ifdef(CONFIG_SPI_WCH spi_wch.c)

@@ -1,0 +1,13 @@
+# Copyright (c) 2026 carrefinho
+# SPDX-License-Identifier: Apache-2.0
+
+description: |
+  WCH CH32X03x flash controller (FPEC).
+
+  Scaffold binding only: there is no matching flash driver yet, this exists so
+  the flash-controller node and its soc-nv-flash child compile and can back the
+  chosen zephyr,flash partition.
+
+compatible: "wch,ch32x03x-flash-controller"
+
+include: flash-controller.yaml

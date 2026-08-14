@@ -1,0 +1,14 @@
+identifier: niao_ch32x033
+name: Niao CH32X033
+type: mcu
+arch: riscv
+toolchain:
+  - cross-compile
+  - zephyr
+ram: 20
+flash: 62
+supported:
+  - gpio
+  - i2c
+  - uart
+  - usb_device
