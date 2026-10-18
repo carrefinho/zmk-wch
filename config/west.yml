@@ -1,0 +1,13 @@
+# Manifest for this repo's CI. ZMK is pinned because its main branch is moving to
+# Zephyr 4.4, and this module targets 4.1.
+manifest:
+  remotes:
+    - name: zmkfirmware
+      url-base: https://github.com/zmkfirmware
+  projects:
+    - name: zmk
+      remote: zmkfirmware
+      revision: 4dd95d7840eb3d5a3f59bb29fbf1ab054715ef85
+      import: app/west.yml
+  self:
+    path: config

@@ -1,0 +1,6 @@
+# CI build matrix for the reusable workflow. WCH boards need `toolchain: riscv64`
+# to get the RISC-V build image.
+---
+include:
+  - board: niao_ch32x033/ch32x035/zmk
+    toolchain: riscv64

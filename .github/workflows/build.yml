@@ -1,0 +1,39 @@
+name: Build
+
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  zmk:
+    uses: ./.github/workflows/build-user-config.yml
+
+  zephyr:
+    name: hello_world (${{ matrix.board }})
+    runs-on: ubuntu-latest
+    container:
+      image: zmkfirmware/zmk-build-riscv64:4.1
+    strategy:
+      fail-fast: false
+      matrix:
+        board: [ch32v203c8t6_evt, ch32v303vct6_evt, ch32x035c8t6_evt]
+    env:
+      # Outside the checkout: this repo's own zephyr/ would collide with the
+      # Zephyr tree west clones.
+      ws: /tmp/ws
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: West init and update
+        run: |
+          mkdir -p "$ws/config"
+          cp config/west.yml "$ws/config/"
+          cd "$ws"
+          west init -l config
+          west update --fetch-opt=--filter=tree:0
+          west zephyr-export
+
+      - name: Build
+        working-directory: ${{ env.ws }}
+        run: >
+          west build -s zephyr/samples/hello_world -b ${{ matrix.board }} -d build --
+          -DEXTRA_ZEPHYR_MODULES="$GITHUB_WORKSPACE" -DCONFIG_REBOOT=y
