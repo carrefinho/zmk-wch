@@ -4,3 +4,23 @@
 # SPDX-License-Identifier: Apache-2.0
 
 rsource "*/Kconfig.defconfig"
+
+if SOC_FAMILY_CH32VX
+
+# Stock 4.1 ships v003-era WCH drivers that autoselect on our DT compatibles;
+# this module carries extended forks under WCHX_* symbols instead. Building
+# both fails, so default the stock ones off here, ahead of their definitions.
+
+config UART_WCH_USART
+	default n
+
+config GPIO_WCH_GPIO
+	default n
+
+config CLOCK_CONTROL_WCH_RCC
+	default n
+
+config WCH_PFIC
+	default n
+
+endif # SOC_FAMILY_CH32VX
