@@ -1,0 +1,17 @@
+/*
+ * Copyright (c) 2026 carrefinho
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/*
+ * CH32X035G8R6: QSOP28 package, 62 KiB flash, 20 KiB SRAM.
+ *
+ * Bonded out (Table 2-1, QSOP28 column): PA0-PA7, PA12, PA13, PB0, PB1,
+ * PB3-PB12, PC3 (also RST), PC14/PC15 (CC1/CC2), PC16/PC17 (USB DM/DP) and
+ * PC18/PC19 (SWDIO/SWCLK). Three pads each carry an internally shorted pair,
+ * and neither pin of a pair may be an output: PA12/PC14 (pad 4), PA13/PC15
+ * (pad 5) and PB1/PB5 (pad 20).
+ */
+
+#include <wch/ch32x0/ch32x035.dtsi>
