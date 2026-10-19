@@ -23,16 +23,6 @@
 #pragma push_macro("BIT_MASK")
 #undef BIT_MASK
 
-#if defined(CONFIG_SOC_SERIES_QINGKE_V2A)
-#define CH32V003 1
-#include <ch32fun.h>
-#endif /* defined(CONFIG_SOC_SERIES_QINGKE_V2A) */
-
-#if defined(CONFIG_SOC_SERIES_QINGKE_V2C)
-#define CH32V00x 1
-#include <ch32fun.h>
-#endif /* defined(CONFIG_SOC_SERIES_QINGKE_V2C) */
-
 #if defined(CONFIG_SOC_SERIES_QINGKE_V4B)
 #define CH32V20x    1
 #define CH32V20x_D6 1
@@ -40,17 +30,10 @@
 #endif /* defined(CONFIG_SOC_SERIES_QINGKE_V4B) */
 
 #if defined(CONFIG_SOC_SERIES_QINGKE_V4C)
-#if defined(CONFIG_SOC_CH32X035)
 /* CH32X035 shares the QingKe V4C core but is its own peripheral family
  * (HSI-only 48 MHz, no PLL/HSE, PCFR1-only AFIO) -> ch32x03xhw.h.
  */
 #define CH32X03x 1
-#else
-#define CH32V20x 1
-#if defined(CONFIG_SOC_CH32V208)
-#define CH32V20x_D8W 1
-#endif
-#endif
 #include <ch32fun.h>
 #endif /* defined(CONFIG_SOC_SERIES_QINGKE_V4C) */
 
